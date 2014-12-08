@@ -13,8 +13,8 @@ app.get('/hello', function(req, res) {
 });
 
 app.get('/login', function(req, res) {
-    var user = AV.User.current();
-    if( user.authenticated() ) {
+    var currentUser = AV.User.current();
+    if( currentUser ) {
         res.redirect('/hello');
     }
     else {
