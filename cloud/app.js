@@ -32,9 +32,9 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/register', function (req, res) {
-    var username = req.params.usrname;
-    var passwd = req.params.passwd;
-    var confirmPasswd = req.params.confirmpasswd;
+    var username = req.body.usrname;
+    var passwd = req.body.passwd;
+    var confirmPasswd = req.body.confirmpasswd;
     if( passwd != confirmPasswd ) {
         res.send('确认密码与密码不一致');
         return;
