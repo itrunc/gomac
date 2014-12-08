@@ -26,19 +26,32 @@
     <div class="panel panel-default">
         <form role="form" class="panel-body" action="/register" method="post" onsubmit="return checksubmit();">
             <div class="form-group">
-                <label class="sr-only" for="usrname">用户名</label>
-                <div class="input-group-addon glyphicon glyphicon-user"></div>
-                <input type="text" class="form-control" id="usrname" name="usrname" placeholder="请输入用户名">
+                <div class="input-group">
+                    <label class="sr-only" for="usrname">用户名</label>
+                    <div class="input-group-addon glyphicon glyphicon-user"></div>
+                    <input type="text" class="form-control" id="usrname" name="usrname" placeholder="请输入用户名">
+                </div>
             </div>
             <div class="form-group">
-                <label class="sr-only" for="passwd">密码</label>
-                <div class="input-group-addon glyphicon glyphicon-lock"></div>
-                <input type="password" class="form-control" id="passwd" name="passwd" placeholder="请输入密码">
+                <div class="input-group">
+                    <label class="sr-only" for="passwd">密码</label>
+                    <div class="input-group-addon glyphicon glyphicon-lock"></div>
+                    <input type="password" class="form-control" id="passwd" name="passwd" placeholder="请输入密码">
+                </div>
             </div>
             <div class="form-group">
-                <label class="sr-only" for="confirmpasswd">确认</label>
-                <div class="input-group-addon glyphicon glyphicon-lock"></div>
-                <input type="password" class="form-control" id="confirmpasswd" name="confirmpasswd" placeholder="请再次输入密码">
+                <div class="input-group">
+                    <label class="sr-only" for="confirmpasswd">确认密码/label>
+                    <div class="input-group-addon glyphicon glyphicon-lock"></div>
+                    <input type="password" class="form-control" id="confirmpasswd" name="confirmpasswd" placeholder="请再次输入密码">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <label class="sr-only" for="email">邮箱</label>
+                    <div class="input-group-addon">@</div>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="请输入邮箱地址">
+                </div>
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-success">注册</button>

@@ -24,7 +24,7 @@ app.get('/register', function (req, res) {
 app.get('/login', function(req, res) {
     var currentUser = AV.User.current(); //获取当前用户
     if( currentUser ) { //已登录
-        res.redirect('/hello');
+        res.redirect('/index');
     }
     else { //未登录
         res.render('login');
@@ -44,7 +44,7 @@ app.post('/register', function (req, res) {
     user.set('password', passwd);
     user.signUp(null, {
         success: function(user) {
-            res.redirect('/hello');
+            res.redirect('/index');
         },
         error: function(user, error) {
             res.send("Error: " + error.code + " " + error.message);
