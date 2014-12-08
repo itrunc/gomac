@@ -47,7 +47,7 @@ app.post('/register', function (req, res) {
             res.redirect('/hello');
         },
         error: function(user, error) {
-            alert("Error: " + error.code + " " + error.message);
+            res.send("Error: " + error.code + " " + error.message);
         }
     });
 });
