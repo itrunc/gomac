@@ -1,1 +1,2 @@
-Cloud code project for gomac. Cloud Code Guide: https://cn.avoscloud.com/docs/cloud_code_guide.html
+Gomac
+====
