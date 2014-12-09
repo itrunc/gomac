@@ -1,27 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh_cn">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="/favicon.ico">
-    <title>登录</title>
-    <!-- Bootstrap core CSS -->
-    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="/ie/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="/ie/ie-emulation-modes-warning.js"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="/html5shiv.min.js"></script>
-    <script src="/respond.min.js"></script>
-    <![endif]-->
+    <%include head%>
 </head>
+
 <body>
+<%include header%>
 <div class="container-fluid">
     <div class="panel panel-default">
         <form role="form" class="panel-body" action="/register" method="post" onsubmit="return checksubmit();">
@@ -41,7 +25,7 @@
             </div>
             <div class="form-group">
                 <div class="input-group">
-                    <label class="sr-only" for="confirmpasswd">确认密码/label>
+                    <label class="sr-only" for="confirmpasswd">确认密码</label>
                     <div class="input-group-addon glyphicon glyphicon-lock"></div>
                     <input type="password" class="form-control" id="confirmpasswd" name="confirmpasswd" placeholder="请再次输入密码">
                 </div>
@@ -59,8 +43,7 @@
         </form>
     </div>
 </div>
-<script src="/jquery-2.1.1.min.js"></script>
-<script src="/bootstrap/js/bootstrap.min.js"></script>
+<%include footer%>
 <script>
     function checksubmit() {
         $('button[type=submin]').prop('disabled', true);
