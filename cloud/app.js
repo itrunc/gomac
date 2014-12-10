@@ -32,6 +32,10 @@ app.get('/login', function(req, res) {
 app.get('/logout', function(req, res) {
     res.render('logout');
 });
+
+app.get('/survey', function(req, res){
+    res.render('survey');
+});
 /*
 app.post('/login', function(req, res) {
     var username = req.body.username;
