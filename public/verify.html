@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="/favicon.ico">
+  <title>Gomac邮箱验证</title>
+  <!-- Bootstrap core CSS -->
+  <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/kendoui/styles/web/kendo.common.core.min.css" rel="stylesheet">
+  <link href="/kendoui/styles/web/kendo.bootstrap.min.css" rel="stylesheet">
+  <link href="/gomac.css" rel="stylesheet">
+
+  <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+  <!--[if lt IE 9]><script src="/ie/ie8-responsive-file-warning.js"></script><![endif]-->
+  <script src="/ie/ie-emulation-modes-warning.js"></script>
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="/html5shiv.min.js"></script>
+  <script src="/respond.min.js"></script>
+  <![endif]-->
+  <script src="/jquery/jquery-2.1.1.min.js"></script>
+  <script src="/jquery/jquery-jsonp-2.4.0.min.js"></script>
+  <script src="/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/kendoui/js/kendo.ui.core.min.js"></script>
+  <script src="/gomac.js"></script>
+</head>
+<body>
+<div id="tip"></div>
+<script>
+  var url = "/1/verifyEmail/";//如果页面运行在自己的服务器，需要写定一个绝对 URL,类似 "https://yourdomain/1/verifyEmail/"
+
+  //获得token,以验证邮件合法性
+  var token = location.search.match(/token=(\w*)/);
+  if(token&&token[1]) { token = token[1]; }
+
+  var notification = $('#tip').kendoNotification().data("kendoNotification");
+
+  function verify(){
+    if(!token) { return; }
+    $.jsonp({
+      url: url+token,
+      callbackParameter: "callback",
+      cache: false,
+      success: function( result ){
+        if( result.error ){
+          notification.error(result.error);
+        }else{
+          notification.success('验证成功');
+          redirect('/logout');
+        }
+      },
+      error:function(result,text){
+        notification.error("服务器发生错误");
+      }
+    });
+  }
+
+  $(function(){
+    verify();
+  });
+
+</script>
+</body>
+</html>

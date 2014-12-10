@@ -1,37 +1,66 @@
 <!DOCTYPE html>
 <html lang="zh_cn">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="/favicon.ico">
-    <title>登录</title>
-    <!-- Bootstrap core CSS -->
-    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="/ie/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="/ie/ie-emulation-modes-warning.js"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="/html5shiv.min.js"></script>
-    <script src="/respond.min.js"></script>
-    <![endif]-->
+    <%include head%>
 </head>
 <body>
+<%include header%>
 <div class="container-fluid">
-    <div class="panel panel-default">
-        <form role="form" class="panel-body">
-            <div class="form-group">
-                <label class="sr-only" for="">用户名</label>
-                <div class="input-group-addon">@</div>
-                <input type="text" class="form-control" id="usrname" placeholder="请输入用户名">
-            </div>
-        </form>
-    </div>
+    <form role="form" class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="form-group">
+            <label for="username">登录名<span class="k-invalid-msg" data-for="username">*</span></label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名或邮箱" required validationMessage="必填">
+        </div>
+        <div class="form-group">
+            <label for="password">密码（<a href="#">找回密码</a>）<span class="k-invalid-msg" data-for="password">*</span></label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码"  required validationMessage="必填">
+        </div>
+        <div class="form-group">
+            <span id="msg"></span>
+            <button type="button" class="btn btn-success">登录</button>
+        </div>
+    </form>
 </div>
+<%include footer%>
+<script>
+    $(function () {
+        var currentUser = AV.User.current();
+        if (currentUser) {
+            gohome();
+            return;
+        }
+
+        var form = $("form"),
+            username = $('#username'),
+            password = $('#password'),
+            message = $('#msg'),
+            submit = $('button');
+
+        var validator = form.kendoValidator().data("kendoValidator");
+
+        var notification = message.kendoNotification({
+            appendTo: 'form'
+        }).data("kendoNotification");
+
+        submit.click(function(){
+            $(this).addClass('disabled');
+            if(validator.validate()) {
+                AV.User.logIn(username.val(), password.val(), {
+                    success: function(user) {
+                        notification.success('登录成功');
+                        gohome();
+                    },
+                    error: function(user, error) {
+                        notification.error('Error: '+error.code+' - '+error.message);
+                    }
+                });
+            }
+            else {
+                notification.error('表单未全部按要求填写');
+            }
+            $(this).removeClass('disabled');
+        });
+    });
+</script>
 </body>
 </html>

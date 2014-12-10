@@ -7,48 +7,91 @@
 <body>
 <%include header%>
 <div class="container-fluid">
-    <div class="panel panel-default">
-        <form role="form" class="panel-body" action="/register" method="post" onsubmit="return checksubmit();">
-            <div class="form-group">
-                <div class="input-group">
-                    <label class="sr-only" for="usrname">用户名</label>
-                    <div class="input-group-addon glyphicon glyphicon-user"></div>
-                    <input type="text" class="form-control" id="usrname" name="usrname" placeholder="请输入用户名">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group">
-                    <label class="sr-only" for="passwd">密码</label>
-                    <div class="input-group-addon glyphicon glyphicon-lock"></div>
-                    <input type="password" class="form-control" id="passwd" name="passwd" placeholder="请输入密码">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group">
-                    <label class="sr-only" for="confirmpasswd">确认密码</label>
-                    <div class="input-group-addon glyphicon glyphicon-lock"></div>
-                    <input type="password" class="form-control" id="confirmpasswd" name="confirmpasswd" placeholder="请再次输入密码">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group">
-                    <label class="sr-only" for="email">邮箱</label>
-                    <div class="input-group-addon">@</div>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="请输入邮箱地址">
-                </div>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-success">注册</button>
-            </div>
-        </form>
-    </div>
+    <form role="form" class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="form-group">
+            <label for="username">用户名<span class="k-invalid-msg" data-for="username">*</span></label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名(必填)" data-toggle="tooltip" data-placement="top" title="必填" required validationMessage="必填">
+        </div>
+        <div class="form-group">
+            <label for="email">邮箱地址<span class="k-invalid-msg" data-for="email">*</span></label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="请输入邮箱地址(必填)" data-toggle="tooltip" data-placement="top" title="必填，格式如：gomac@example.com" required validationMessage="必填" data-email-msg="邮箱格式如：gomac@example.com">
+        </div>
+        <div class="form-group">
+            <label for="phone">手机号码<span class="k-invalid-msg" data-for="phone"></span></label>
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="请输入手机号码(可选)">
+        </div>
+        <div class="form-group">
+            <label for="password">密码<span class="k-invalid-msg" data-for="password">*</span></label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码(必填)" data-toggle="tooltip" data-placement="top" title="必填，至少8位，同时包含数字、小写字母、大写字母" required validationMessage="必填，至少8位，同时包含数字、小写字母、大写字母">
+        </div>
+        <div class="form-group">
+            <label for="confirmpasswd">确认密码<span class="k-invalid-msg" data-for="confirmpasswd"></span></label>
+            <input type="password" class="form-control" id="confirmpasswd" name="confirmpasswd" placeholder="请再次输入密码" required validationMessage="必填">
+        </div>
+        <div class="checkbox">
+            <label><input type="checkbox" id="agreement" name="agreement" required validationMessage="请阅读并同意使用协议"> 我已阅读并同意</label>
+            <a href="#">Gomac使用协议</a>
+            <span class="k-invalid-msg" data-for="agreement"></span>
+        </div>
+        <div class="form-group">
+            <span id="msg"></span>
+            <button type="button" class="btn btn-success">注册</button>
+        </div>
+    </form>
 </div>
 <%include footer%>
 <script>
-    function checksubmit() {
-        $('button[type=submin]').prop('disabled', true);
-        return true;
-    }
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+
+        var form = $("form"),
+            username = $('#username'),
+            email = $('#email'),
+            phone = $('#phone'),
+            password = $('#password'),
+            confirmPassword = $('#confirmpasswd'),
+            agreement = $('#agreement'),
+            message = $('#msg'),
+            submit = $('button');
+
+        var validator = form.kendoValidator().data("kendoValidator");
+
+        var notification = message.kendoNotification({
+            appendTo: 'form'
+        }).data("kendoNotification");
+
+        submit.click(function(){
+            $(this).addClass('disabled');
+            if(validator.validate()) {
+                if(confirmPassword.val() !== password.val()) {
+                    notification.error('确认密码与密码不一致');
+                    confirmPassword.focus();
+                }
+                else {
+                    var user = new AV.User();
+                    user.set('username', username.val());
+                    user.set('password', password.val());
+                    user.set('email', email.val());
+                    if(phone.val().length > 0) {
+                        user.set('phone', phone.val());
+                    }
+                    user.signUp(null, {
+                        success: function(user) {
+                            notification.success('注册成功');
+                            redirect('/login');
+                        },
+                        error: function(user, error) {
+                            notification.error('Error: '+error.code+' - '+error.message);
+                        }
+                    });
+                }
+            }
+            else {
+                notification.error('表单未全部按要求填写');
+            }
+            $(this).removeClass('disabled');
+        });
+    })
 </script>
 
 </body>

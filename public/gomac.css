@@ -1,3 +1,35 @@
 html,body{margin:0;padding:40px 0 0}
+body{font-family:"Helvetica Neue",Helvetica,Arial,"Hiragino Sans GB","Microsoft Yahei",sans-serif; font-size:16px}
 
 .navbar{background-color:#fff;border-top:4px solid #44b549;}
+
+label{font-weight:normal}
+
+.tooltip {
+  font-family: "Helvetica Neue",Helvetica,Arial,"Hiragino Sans GB","Microsoft Yahei",sans-serif;
+  font-size: 14px;
+}
+.tooltip.in {
+  filter: alpha(opacity=80);
+  opacity: .8;
+}
+.tooltip-inner {
+  background-color: #44b549;
+  padding:5px 8px;
+}
+.tooltip.top .tooltip-arrow,
+.tooltip.top-left .tooltip-arrow,
+.tooltip.top-right .tooltip-arrow {
+  border-top-color: #44b549;
+}
+.tooltip.right .tooltip-arrow {
+  border-right-color: #44b549;
+}
+.tooltip.left .tooltip-arrow {
+  border-left-color: #44b549;
+}
+.tooltip.bottom .tooltip-arrow,
+.tooltip.bottom-left .tooltip-arrow,
+.tooltip.bottom-right .tooltip-arrow{
+  border-bottom-color: #44b549;
+}

@@ -13,23 +13,39 @@ app.use(express.bodyParser());    // 读取请求 body 的中间件
 //});
 
 app.get('/index', function(req, res) {
-    res.send('Hello Index');
+    res.render('index');
 });
 
 app.get('/register', function (req, res) {
-    AV.User.logOut(); //已登录用户退出
     res.render('register');
 });
 
 app.get('/login', function(req, res) {
-    var currentUser = AV.User.current(); //获取当前用户
-    if( currentUser ) { //已登录
-        res.redirect('/index');
-    }
-    else { //未登录
-        res.render('login');
-    }
+    res.render('login');
 });
+
+app.get('/logout', function(req, res) {
+    res.render('logout');
+});
+/*
+app.post('/login', function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    AV.User.logIn(username, password, {
+        success: function(user) {
+            res.json({
+                'url': '/index'
+            });
+        },
+        error: function(user, error) {
+            res.status(500).json({
+                'code' : error.code,
+                'message' : error.message
+            });
+        }
+    });
+});
+
 
 app.post('/register', function (req, res) {
     var username = req.body.usrname;
@@ -51,6 +67,7 @@ app.post('/register', function (req, res) {
         }
     });
 });
+*/
 
 // 最后，必须有这行代码来使 express 响应 HTTP 请求
 app.listen();
