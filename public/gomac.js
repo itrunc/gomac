@@ -4,5 +4,5 @@ function redirect( url ) {
 }
 
 function gohome() {
-    redirect( '/index' );
+    redirect( '/' );
 }

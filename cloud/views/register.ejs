@@ -3,7 +3,6 @@
 <head>
     <%include head%>
 </head>
-
 <body>
 <%include header%>
 <div class="container-fluid">
@@ -42,6 +41,7 @@
 <%include footer%>
 <script>
     $(function () {
+        var success = false;
         $('[data-toggle="tooltip"]').tooltip();
 
         var form = $("form"),
@@ -57,7 +57,15 @@
         var validator = form.kendoValidator().data("kendoValidator");
 
         var notification = message.kendoNotification({
-            appendTo: 'form'
+            appendTo: 'form',
+            hide: function(e) {
+                if( success ) { //注册成功
+                    gohome();
+                }
+                else { //注册失败
+                    submit.removeClass('disabled');
+                }
+            }
         }).data("kendoNotification");
 
         submit.click(function(){
@@ -77,8 +85,8 @@
                     }
                     user.signUp(null, {
                         success: function(user) {
-                            notification.success('注册成功');
-                            redirect('/login');
+                            notification.success('您已经成功注册，请查收帐号验证邮件。本页面将会跳转');
+                            success = true;
                         },
                         error: function(user, error) {
                             notification.error('Error: '+error.code+' - '+error.message);
@@ -89,7 +97,6 @@
             else {
                 notification.error('表单未全部按要求填写');
             }
-            $(this).removeClass('disabled');
         });
     })
 </script>

@@ -1,4 +1,5 @@
 // 在 Cloud code 里初始化 Express 框架
+var url = require('url');
 var express = require('express');
 var app = express();
 
@@ -12,8 +13,11 @@ app.use(express.bodyParser());    // 读取请求 body 的中间件
 //  res.render('hello', { message: 'Congrats, you just set up your app!' });
 //});
 
-app.get('/index', function(req, res) {
+app.get('/', function(req, res){
     res.render('index');
+});
+app.get('/index', function(req, res) {
+    res.redirect('/');
 });
 
 app.get('/register', function (req, res) {
@@ -21,7 +25,8 @@ app.get('/register', function (req, res) {
 });
 
 app.get('/login', function(req, res) {
-    res.render('login');
+    var referer = req.get('Referer') || '/';
+    res.render('login', {'referer': url.parse(referer).path});
 });
 
 app.get('/logout', function(req, res) {

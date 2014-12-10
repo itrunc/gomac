@@ -17,6 +17,7 @@
         </div>
         <div class="form-group">
             <span id="msg"></span>
+            <input type="hidden" id="referUrl" value="<%= referer %>">
             <button type="button" class="btn btn-success">登录</button>
         </div>
     </form>
@@ -24,8 +25,9 @@
 <%include footer%>
 <script>
     $(function () {
+        var success = false;
         var currentUser = AV.User.current();
-        if (currentUser) {
+        if (currentUser) { //已登录
             gohome();
             return;
         }
@@ -34,21 +36,33 @@
             username = $('#username'),
             password = $('#password'),
             message = $('#msg'),
-            submit = $('button');
+            submit = $('button'),
+            referUrl = $('referUrl').val() || '/';
 
+        //表单验证
         var validator = form.kendoValidator().data("kendoValidator");
 
+        //通知定义
         var notification = message.kendoNotification({
-            appendTo: 'form'
+            appendTo: 'form',
+            hide: function(e) {
+                if( success ) { //如果登录成功
+                    redirect( referUrl );
+                }
+                else { //登录不成功
+                    submit.removeClass('disabled');
+                }
+            }
         }).data("kendoNotification");
 
+        //提交按钮事件
         submit.click(function(){
             $(this).addClass('disabled');
             if(validator.validate()) {
                 AV.User.logIn(username.val(), password.val(), {
                     success: function(user) {
-                        notification.success('登录成功');
-                        gohome();
+                        notification.success('您已经成功登录，本页面将会跳转。如果未跳转，请 <a href="'+referUrl+'">点击这里</a>');
+                        success = true; //登录成功
                     },
                     error: function(user, error) {
                         notification.error('Error: '+error.code+' - '+error.message);
@@ -58,7 +72,6 @@
             else {
                 notification.error('表单未全部按要求填写');
             }
-            $(this).removeClass('disabled');
         });
     });
 </script>

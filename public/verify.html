@@ -32,13 +32,23 @@
 <body>
 <div id="tip"></div>
 <script>
-  var url = "https://leancloud.cn/1/verifyEmail/";//如果页面运行在自己的服务器，需要写定一个绝对 URL,类似 "https://yourdomain/1/verifyEmail/"
-
+  //如果页面运行在自己的服务器，需要写定一个绝对 URL,类似 "https://yourdomain/1/verifyEmail/"
+  var url = "https://leancloud.cn/1/verifyEmail/";
   //获得token,以验证邮件合法性
   var token = location.search.match(/token=(\w*)/);
   if(token&&token[1]) { token = token[1]; }
 
-  var notification = $('#tip').kendoNotification().data("kendoNotification");
+  var notification = $('#tip').kendoNotification({
+    position: {
+      pinned: true,
+      top: 20,
+      left: 20
+    },
+    hideOnClick: true,
+    hide: function(e) {
+      gohome();
+    }
+  }).data("kendoNotification");
 
   function verify(){
     if(!token) { return; }
@@ -50,8 +60,7 @@
         if( result.error ){
           notification.error(result.error);
         }else{
-          notification.success('验证成功');
-          redirect('/logout');
+          notification.success('您的帐号已经验证成功，本页面将会跳转');
         }
       },
       error:function(result,text){
