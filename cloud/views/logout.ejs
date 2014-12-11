@@ -2,18 +2,23 @@
 <html lang="zh_cn">
 <head>
     <%include head%>
+    <style type="text/css">
+        html,body{margin: 0;padding: 0;}
+        .container{margin: 12px auto}
+    </style>
 </head>
 <body>
-<div id="tip"></div>
+<div class="container"><p id="tip"></p></div>
 <%include footer%>
 <script>
     $(function(){
         var notification = $('#tip').kendoNotification({
-            position: {
-                pinned: true,
-                top: 20,
-                left: 20
-            },
+//            position: {
+//                pinned: true,
+//                top: 20,
+//                left: 20
+//            },
+            appendTo: 'div.container',
             hideOnClick: true,
             hide: function(e) {
                 gohome();

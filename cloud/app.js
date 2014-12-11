@@ -33,6 +33,14 @@ app.get('/logout', function(req, res) {
     res.render('logout');
 });
 
+app.get('/verify', function(req, res) {
+    res.render('verify');
+});
+
+app.get('/reset', function(req, res) {
+    res.render('reset');
+});
+
 app.get('/survey', function(req, res){
     res.render('survey');
 });

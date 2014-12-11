@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+    <%include head%>
+</head>
+<body>
+<div class="container-fluid">
+    <form role="form" class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="form-group">
+            <label for="password">新密码<span class="k-invalid-msg" data-for="password">*</span></label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="请输入新密码"  required validationMessage="必填">
+        </div>
+        <div class="form-group">
+            <label for="repeatPassword">确认新密码<span class="k-invalid-msg" data-for="repeatPassword">*</span></label>
+            <input type="password" class="form-control" id="repeatPassword" name="repeatPassword" placeholder="请再次输入新密码" required validationMessage="必填">
+        </div>
+        <div class="form-group">
+            <span id="msg"></span>
+            <button type="button" class="btn btn-success">提交</button>
+        </div>
+    </form>
+</div>
+<%include footer%>
+<script src="/jquery/jquery.jsonp-2.4.0.min.js"></script>
+<script>
+    //获得token
+    var token = location.search.match( /token=(\w*)/ );
+    if(token && token[1]){ token = token[1]; }
+
+    $(function () {
+        var success = false;
+
+        var form = $("form"),
+            password = $('#password'),
+            repeatPassword = $('#repeatPassword'),
+            message = $('#msg'),
+            submit = $('button');
+
+        //表单验证
+        var validator = form.kendoValidator().data("kendoValidator");
+
+        //通知定义
+        var notification = message.kendoNotification({
+            appendTo: 'form',
+            hide: function(e) {
+                if( success ) { //重置成功
+                    AV.User.logOut();
+                    gohome();
+                }
+                else { //重置不成功
+                    submit.removeClass('disabled');
+                }
+            }
+        }).data("kendoNotification");
+
+        //提交按钮事件
+        submit.click(function(){
+            $(this).addClass('disabled');
+            if(validator.validate()) {
+                if(repeatPassword.val() !== password.val()) {
+                    notification.error('确认密码与密码不一致');
+                    repeatPassword.focus();
+                }
+                else {
+                    $.jsonp({
+                        url: "https://leancloud.cn/1/resetPassword/"+token,//如果页面运行在自己的服务器，需要写定一个绝对 URL,类似 "https://yourdomain/1/resetPassword/"
+                        data: {password: password.val()},
+                        callbackParameter: "callback",
+                        cache: false,
+                        success:function(result){
+                            $("#error").show();//成功和失败都会有提示信息, 共用 #error
+                            if(result.error){
+                                notification.error(result.error);
+                            }else{
+                                notification.success("您已经成功重置密码，本页面将会跳转");
+                                success = true;
+                            }
+                        },
+                        error:function(result,text){
+                            notification.error("服务器发生错误");
+                        }
+                    });
+                }
+            }
+            else {
+                notification.error('表单未全部按要求填写');
+            }
+        });
+    });
+</script>
+</body>
+</html>
