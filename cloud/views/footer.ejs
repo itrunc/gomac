@@ -3,6 +3,14 @@
 </footer>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 <script src="/kendoui/js/kendo.ui.core.min.js"></script>
+<script src="/js/underscore-min.js"></script>
+<script>
+    _.templateSettings = {
+        evaluate : /\{%([\s\S]+?)\%\}/g,
+        interpolate : /\{%=([\s\S]+?)\%\}/g,
+        escape : /\{%-([\s\S]+?)%\}/g
+    }
+</script>
 <script src="/js/leancloud-min.js"></script>
 <script src="/gomac.js"></script>
 <script>

@@ -5,6 +5,12 @@ body{font-family:"Helvetica Neue",Helvetica,Arial,"Hiragino Sans GB","Microsoft 
 
 label{font-weight:normal}
 
+.dropdown-menu>.active>a,
+.dropdown-menu>.active>a:hover,
+.dropdown-menu>.active>a:focus {
+  background-color: #44b549;
+}
+
 .tooltip {
   font-family: "Helvetica Neue",Helvetica,Arial,"Hiragino Sans GB","Microsoft Yahei",sans-serif;
   font-size: 14px;

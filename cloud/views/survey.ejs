@@ -5,10 +5,68 @@
 </head>
 <body>
 <%include header%>
-<div class="container">
-    调查列表
+<div id="surveyapp" class="container">
+
+    <div id="survey-collection-view">
+        <table class="table">
+            <caption>
+                <button type="button" id="btn-add-survey" class="btn btn-default" data-toggle="modal" data-target="#surveyModal">新增</button>
+            </caption>
+            <thead>
+            <tr><th>标题</th><th>简介</th><th>结束语</th></tr>
+            </thead>
+            <tbody id="survey-list"></tbody>
+        </table>
+        <div id="surveyModal" class="modal fade" data-backdrop="false">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">调查</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="survey-title">标题<span class="k-invalid-msg" data-for="survey-title">*</span></label>
+                                <input type="text" class="form-control" id="survey-title" name="survey-title" required placeholder="(必填)请输入标题" validationMessage="必填">
+                            </div>
+                            <div class="form-group">
+                                <label for="survey-intro">卷首语<span class="k-invalid-msg" data-for="survey-intro">*</span></label>
+                                <textarea class="form-control" id="survey-intro" name="survey-intro" rows="3" required placeholder="(必填)请输入卷首语" validationMessage="必填"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="survey-closing">结束语<span class="k-invalid-msg" data-for="survey-closing">*</span></label>
+                                <textarea class="form-control" id="survey-closing" name="survey-closing" rows="3" required placeholder="(必填)请输入结束语" validationMessage="必填"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>背景颜色：</label>
+                                <span id="survey-backgroud-color-picker"></span>
+                                <label>&nbsp;&nbsp;&nbsp;&nbsp;文字颜色：</label>
+                                <span id="survey-text-color-picker"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="survey-background-url">背景图片网址</label>
+                                <input type="url" class="form-control" id="survey-background-url" placeholder="(可选)请输入背景图片网址">
+                            </div>
+                            <div class="form-group">
+                                <label for="survey-conf">用户信息请求配置（格式：名称:类型:描述，每行一项）</label>
+                                <textarea class="form-control" id="survey-conf" rows="4" placeholder="(可选)用户信息请求配置，例如：fullname:textarea:姓名"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btn-save-survey" class="btn btn-primary">保存</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
 </div>
 <%include footer%>
+
+<script type="text/template" id="survey-tpl">
+    <tr><td>{%= title %}</td><td>{%= intro %}</td><td>{%= closing %}</td></tr>
+</script>
 <script src="/js/survey.js"></script>
 </body>
 </html>
