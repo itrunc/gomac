@@ -22,6 +22,7 @@
         appendTo: 'div.container',
         hideOnClick: true,
         hide: function(e) {
+            AV.User.logOut();
             gohome();
         }
     }).data("kendoNotification");

@@ -60,6 +60,7 @@
             appendTo: 'form',
             hide: function(e) {
                 if( success ) { //注册成功
+                    AV.User.logOut();
                     gohome();
                 }
                 else { //注册失败
