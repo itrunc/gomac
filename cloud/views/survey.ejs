@@ -103,7 +103,6 @@
             <textarea class="form-control" id="survey-conf" rows="4" placeholder="(可选)用户信息请求配置，例如：fullname:textarea:姓名">{%- conf %}</textarea>
         </div>
         <div class="form-group">
-            <p class="modal-msg"></p>
             <button type="button" id="btn-save-survey" class="btn btn-success">保存</button>
         </div>
     </form>
@@ -123,11 +122,16 @@
             <label for="survey-item-intro">描述</label>
             <textarea class="form-control" id="survey-item-intro" name="survey-item-intro" rows="3" placeholder="(可选)请输入描述">{%- intro %}</textarea>
         </div>
-        <div class="form-group">
-            <p class="modal-msg"></p>
-            <button type="button" class="btn btn-success" id="btn-save-survey-item">保存</button>
-        </div>
     </form>
+</script>
+
+<script type="text/template" id="survey-item-tpl">
+    <h4 class="list-group-item-heading">{%- title %}</h4>
+    <p class="list-group-item-text">{%- intro %}</p>
+</script>
+
+<script type="text/template" id="survey-item-collection-tpl">
+    <ul class="list-group"></ul>
 </script>
 
 <script src="/js/survey.js"></script>
