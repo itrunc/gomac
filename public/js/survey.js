@@ -388,12 +388,14 @@ $(function(){
         initialize: function() {
             var self = this;
 
-            self.dialog = new BootstrapDialog({
+            _.bindAll(self, 'addOne', 'addAll');
+
+            this.dialog = new BootstrapDialog({
                 title: self.options.surveyView.model.get('title'),
                 message: self.template(),
                 type: BootstrapDialog.TYPE_DEFAULT,
                 nl2br: false,
-                size: BootstrapDialog.SIZE_WIDE,
+                //size: BootstrapDialog.SIZE_WIDE,
                 buttons: [{
                     label: '关闭',
                     cssClass: 'btn-default',
@@ -412,7 +414,7 @@ $(function(){
                 }
             });
 
-            self.dialog.open();
+            this.dialog.open();
         },
         addOne: function(surveyItem) {
             var self = this;
@@ -424,11 +426,8 @@ $(function(){
         },
 
         addAll: function(collection, filter) {
-            var self = this;
-            console.log(self.dialog);
-
-            self.dialog.getModalBody().find('.list-group').html('');
-            self.surveyItemCollection.each( this.addOne );
+            this.dialog.getModalBody().find('.list-group').html('');
+            this.surveyItemCollection.each( this.addOne );
         }
     });
 
