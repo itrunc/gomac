@@ -51,25 +51,25 @@
 </script>
 
 <script type="text/template" id="survey-tpl">
-    <div class="panel panel-success">
+    <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">
-                {%- title %}
-                <button class="btn btn-info btn-xs btn-edit-survey"><i class="glyphicon glyphicon-edit"></i></button>
-                <button class="btn btn-danger btn-xs btn-remove-survey"><i class="glyphicon glyphicon-remove"></i></button>
-            </h3>
+            <h3 class="panel-title">{%- model.title %}</h3>
         </div>
-        <div class="panel-body" style="color:{%- color %};background-color:{%- background.color %}">
+        <div class="panel-body" style="color:{%- model.color %};background-color:{%- model.background.color %}">
             <h5>卷首语：</h5>
-            <pre style="color:{%- color %}">{%= intro %}</pre>
+            <pre style="color:{%- model.color %}">{%= model.intro %}</pre>
             <hr>
             <h5>结束语：</h5>
-            <pre style="color:{%- color %}">{%= closing %}</pre>
+            <pre style="color:{%- model.color %}">{%= model.closing %}</pre>
         </div>
         <div class="panel-footer">
-            当前问题数目：
-            <button class="btn btn-success btn-xs btn-add-survey-item"><i class="glyphicon glyphicon-plus"></i></button>
-            <button class="btn btn-success btn-xs btn-view-survey-item"><i class="glyphicon glyphicon-eye-open"></i></button>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default btn-edit-survey"><i class="glyphicon glyphicon-edit"></i> 编辑</button>
+                <button type="button" class="btn btn-default btn-remove-survey"><i class="glyphicon glyphicon-remove"></i> 删除</button>
+                <button type="button" class="btn btn-default btn-add-survey-item"><i class="glyphicon glyphicon-plus"></i> 题目数: <span class="survey-item-count">{%- count %}</span></button>
+                <button type="button" class="btn btn-default btn-view-survey-item"><i class="glyphicon glyphicon-eye-open"></i> 查看</button>
+            </div>
+
         </div>
     </div>
 </script>
@@ -90,11 +90,9 @@
         </div>
         <div class="form-group">
             <label>背景颜色：</label>
-            <span id="survey-backgroud-color-picker"></span>
+            <input type="text" id="survey-background-color" value="{%- background.color %}">
             <label>&nbsp;&nbsp;&nbsp;&nbsp;文字颜色：</label>
-            <span id="survey-text-color-picker"></span>
-            <input type="hidden" id="survey-background-color" value="{%- background.color %}">
-            <input type="hidden" id="survey-text-color" value="{%- color %}">
+            <input type="text" id="survey-text-color" value="{%- color %}">
         </div>
         <div class="form-group">
             <label for="survey-background-url">背景图片网址</label>
@@ -105,7 +103,7 @@
             <textarea class="form-control" id="survey-conf" rows="4" placeholder="(可选)用户信息请求配置，例如：fullname:textarea:姓名">{%- conf %}</textarea>
         </div>
         <div class="form-group">
-            <p class="modal-msg"><span></span></p>
+            <p class="modal-msg"></p>
             <button type="button" id="btn-save-survey" class="btn btn-success">保存</button>
         </div>
     </form>
@@ -126,6 +124,7 @@
             <textarea class="form-control" id="survey-item-intro" name="survey-item-intro" rows="3" placeholder="(可选)请输入描述">{%- intro %}</textarea>
         </div>
         <div class="form-group">
+            <p class="modal-msg"></p>
             <button type="button" class="btn btn-success" id="btn-save-survey-item">保存</button>
         </div>
     </form>

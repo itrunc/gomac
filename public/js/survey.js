@@ -31,9 +31,7 @@ $(function(){
     });
 
     //调查集合定义
-    var SurveyCollection = AV.Collection.extend({
-        model: Survey
-    });
+    var SurveyCollection = AV.Collection.extend({ model: Survey });
 
     //问题集合定义
     var SurveyItemCollection = AV.Collection.extend({ model: SurveyItem });
@@ -55,8 +53,13 @@ $(function(){
 
             this.saveSuccess = false;
 
+            this.$el.off('hidden.bs.modal');
+            this.$el.on('hidden.bs.modal', function (e) {
+                self.undelegateEvents();
+            })
+
             //初始化提示信息
-            this.notification = this.$el.find('.modal-msg span').kendoNotification({
+            this.notification = $('<span></span>').kendoNotification({
                 appendTo: '.modal-msg',
                 hide: function(e) {
                     self.$el.find('#btn-save-survey').removeClass('disabled');
@@ -68,23 +71,15 @@ $(function(){
             }).data("kendoNotification");
 
             //背景拾色器
-            this.$el.find('#survey-backgroud-color-picker').kendoColorPicker({
+            this.$el.find('#survey-background-color').kendoColorPicker({
                 value: this.model.get('background').color,
-                buttons: false,
-                change: function(e) {
-                    this.$el.find('#survey-background-color').val(e.value);
-                    this.$el.find('#survey-closing').css('background-color', e.value);
-                }
+                buttons: false
             }).data('kendoColorPicker');
 
             //前景拾色器
-            this.$el.find('#survey-text-color-picker').kendoColorPicker({
+            this.$el.find('#survey-text-color').kendoColorPicker({
                 value: this.model.get('color'),
-                buttons: false,
-                change: function(e) {
-                    this.$el.find('#survey-text-color').val(e.value);
-                    this.$el.find('#survey-closing').css('color', e.value);
-                }
+                buttons: false
             }).data('kendoColorPicker');
 
         },
@@ -135,33 +130,62 @@ $(function(){
 
     //问题表单
     var SurveyItemFormView = AV.View.extend({
-        el: '#survey-sub-modal .modal-body',
+        el: '#survey-sub-modal',
         template: _.template( $('#survey-item-form-tpl').html() ),
         events: {
             'click #btn-save-survey-item': 'saveSurveyItem'
         },
         initialize: function() {
             var self = this;
-            self.$el.html( this.template(this.model.toJSON()) );
+            self.$el.find('.modal-body').html( this.template(this.model.toJSON()) );
+
+            //初始化表单验证
+            this.validator = this.$el.find('form').kendoValidator().data("kendoValidator");
+
+            this.saveSuccess = false;
+
+            this.$el.off('hidden.bs.modal');
+            this.$el.on('hidden.bs.modal', function (e) {
+                self.undelegateEvents();
+            })
+
+            //初始化提示信息
+            this.notification = $('<span></span>').kendoNotification({
+                appendTo: '.modal-msg',
+                hide: function(e) {
+                    self.$el.find('#btn-save-survey-item').removeClass('disabled');
+                    if( self.saveSuccess ) {
+                        self.$el.modal('hide');
+                        self.saveSuccess = false;
+                    }
+                }
+            }).data("kendoNotification");
         },
         saveSurveyItem: function(e) {
             var self = this;
             var currentUser = AV.User.current();
 
+            $(e.target).addClass('disabled');
+
             self.model.set('title', this.$el.find('#survey-item-title').val());
             self.model.set('intro', this.$el.find('#survey-item-intro').val());
             self.model.set('items', this.$el.find('#survey-item-items').val());
-            self.model.set('survey', this.options.survey);
-            self.model.set('user', currentUser);
-            self.model.set('ACL', new AV.ACL(currentUser));
+
+            if( self.options.isCreate ) {
+                self.model.set('survey', self.options.surveyView.model);
+                self.model.set('user', currentUser);
+                self.model.set('ACL', new AV.ACL(currentUser));
+            }
 
             self.model.save(null, {
                 success: function(model) {
-                    alert('保存成功');
+                    self.options.surveyView.itemCount++;
+                    self.options.surveyView.render();
+                    self.notification.success('您已经成功保存，本弹窗即将关闭');
+                    self.saveSuccess = true;
                 },
                 error: function(model, error) {
-                    alert('保存失败');
-                    console.log(error);
+                    self.notification.error('保存失败：'+error.message);
                 }
             });
         }
@@ -179,16 +203,33 @@ $(function(){
             'click .btn-add-survey-item': 'addSurveyItem'
         },
         initialize: function() {
-            //_.bindAll(this, 'render', 'close', 'remove');
+            var self = this;
             _.bindAll(this, 'render', 'remove');
             this.model.bind('change', this.render);
             this.model.bind('destroy', this.remove);
+
+            var surveyItem = AV.Object.extend('SurveyItem');
+            var query = new AV.Query( surveyItem );
+            query.equalTo('survey', this.model);
+            query.equalTo('user', AV.User.current());
+            query.count({
+                success: function(count) {
+                    self.itemCount = count;
+                    self.$el.find('.survey-item-count').text(count);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
         },
         render: function() {
-            $(this.el).html(this.template(this.model.toJSON()));
+            $(this.el).html( this.template({
+                model: this.model.toJSON(),
+                count: this.itemCount
+            }) );
             return this;
         },
-        editSurvey: function(e) {
+        editSurvey: function(e) { //编辑调查
             var self = this;
             if( AV.User.current() ) {
                 var surveyFormView = new SurveyFormView({
@@ -202,16 +243,18 @@ $(function(){
                 redirect('/login');
             }
         },
-        removeSurvey: function(e) {
+        removeSurvey: function(e) { //删除调查
             if( confirm('您将删除《'+this.model.get('title')+'》？') ) {
+                //TODO: 级联删除问题
                 this.model.destroy();
             }
         },
-        addSurveyItem: function(e) {
+        addSurveyItem: function(e) { //添加调查问题
             var self = this;
             var surveyItemFormView = new SurveyItemFormView({
                 model: AV.Object.new('SurveyItem'),
-                survey: self.model
+                surveyView: self,
+                isCreate: true
             });
             $('#survey-sub-modal').modal('show');
         }
@@ -273,9 +316,6 @@ $(function(){
     var AppView = AV.View.extend({
         el: $('body'),
         initialize: function() {
-            this.render();
-        },
-        render: function() {
             new SurveyCollectionView();
         }
     });
