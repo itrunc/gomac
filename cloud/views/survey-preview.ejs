@@ -2,10 +2,97 @@
 <html lang="zh_cn">
 <head>
 <%include head%>
+<style type="text/css">
+    html, body {
+        padding: 0;
+        font-size: 14px;
+        line-height: 1.8em;
+    }
+    pre {
+        font-size: 16px;
+        border: none;
+        background-color: transparent;
+    }
+    .list-group-item {
+        background-color: transparent;
+    }
+</style>
 </head>
 <body>
-<div id="surveyapp" class="container"></div>
+<div id="survey" class="container"></div>
 <%include footer%>
+
+<script type="text/template" id="survey-welcome-tpl">
+    <div class="page-header">
+        <h1>{%- survey.title %}</h1>
+    </div>
+    <pre>{%= survey.intro %}</pre>
+    <div>
+        <a href="#next" class="btn btn-default">马上开始</a>
+    </div>
+</script>
+
+<script type="text/template" id="survey-item-collection-tpl">
+    <ul class="list-group" id="survey-item-list">
+        <div style="text-align: center"><img src="/loading.gif"></div>
+    </ul>
+</script>
+
+<script type="text/template" id="survey-item-sc-tpl">
+    <h4 class="list-group-item-heading">
+        {%- model.title %}
+    </h4>
+    <ul class="list-group-item-text">
+        {% _.each(model.items.split('\n'), function(item){ %}
+        <li class="radio">
+            <label><input type="radio" name="answer[{%- model.objectId %}]"> {%- item %}</label>
+        </li>
+        {% }) %}
+        {% if(model.other) { %}
+        <li class="radio">
+            <label>
+                <input type="radio" name="answer[{%- model.objectId %}]">
+                其他：
+                <input type="text">
+            </label>
+
+        </li>
+        {% } %}
+    </ul>
+</script>
+
+<script type="text/template" id="survey-item-mc-tpl">
+    <h4 class="list-group-item-heading">
+        {%- model.title %}
+    </h4>
+    <ul class="list-group-item-text">
+        {% _.each(model.items.split('\n'), function(item){ %}
+        <li class="checkbox">
+            <label><input type="checkbox" name="answer[{%- model.objectId %}][]"> {%- item %}</label>
+        </li>
+        {% }) %}
+        {% if(model.other) { %}
+        <li class="checkbox">
+            <label>
+                <input type="checkbox" name="answer[{%- model.objectId %}][]">
+                其他：
+                <input type="text">
+            </label>
+
+        </li>
+        {% } %}
+    </ul>
+</script>
+
+<script type="text/template" id="survey-item-qa-tpl">
+    <h4 class="list-group-item-heading">
+        {%- model.title %}
+    </h4>
+    <div class="list-group-item-text">
+        <textarea class="form-control" rows="3"></textarea>
+    </div>
+</script>
+
 <script>
     var surveyID = '<%=surveyID%>';
 </script>
