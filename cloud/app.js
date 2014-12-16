@@ -67,12 +67,20 @@ app.get('/reset', function(req, res) {
     res.render('reset', assign);
 });
 
-//调查
+//调查管理
 app.get('/survey', function(req, res){
     var assign = {
         appname: 'survey'
     };
     res.render('survey', assign);
+});
+
+app.get('/survey/preview/:id', function(req, res) {
+    var assign = {
+        appname: 'survey-preview',
+        surveyID: req.params.id
+    };
+    res.render('survey-preview', assign);
 });
 
 

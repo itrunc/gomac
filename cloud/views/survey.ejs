@@ -12,6 +12,34 @@
         #survey-list {
             margin-top: 20px;
         }
+        .tab-pane {
+            padding-top: 20px;
+        }
+        textarea {
+            resize: none;
+        }
+        .badge {
+            background-color:transparent;
+            color:#999;
+            cursor:pointer;
+        }
+        .list-group-item {
+            border:none;
+            border-top: 1px solid #ddd;
+            background-color: transparent;
+        }
+        .list-group-item:first-child{
+            border:none;
+        }
+        .list-group-item-heading {
+            font-size: 14px;
+            line-height: 1.5em;
+        }
+        ul.list-group-item-text li{
+            list-style-type: upper-alpha;
+            line-height: 1.5em;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -23,8 +51,9 @@
     <div class="controller-bar">
         <button type="button" id="btn-add-survey" class="btn btn-success">创建调查</button>
     </div>
-    <div id="survey-list"></div>
-
+    <div id="survey-list">
+        <div style="text-align: center"><img src="/loading.gif"></div>
+    </div>
     <div id="survey-main-modal" class="modal fade" data-backdrop="false">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -66,75 +95,125 @@
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-default btn-edit-survey"><i class="glyphicon glyphicon-edit"></i> 编辑</button>
                 <button type="button" class="btn btn-default btn-remove-survey"><i class="glyphicon glyphicon-remove"></i> 删除</button>
-                <button type="button" class="btn btn-default btn-add-survey-item"><i class="glyphicon glyphicon-plus"></i> 题目数: <span class="survey-item-count">{%- count %}</span></button>
-                <button type="button" class="btn btn-default btn-view-survey-item"><i class="glyphicon glyphicon-eye-open"></i> 查看</button>
+                <div class="btn-group dropup">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="glyphicon glyphicon-plus"></i> 创建题目 <span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#" class="btn-add-survey-item" data-type="sc">单选题</a></li>
+                        <li><a href="#" class="btn-add-survey-item" data-type="mc">多选题</a></li>
+                        <li><a href="#" class="btn-add-survey-item" data-type="qa">简答题</a></li>
+                    </ul>
+                </div>
+                <button type="button" class="btn btn-default btn-view-survey-item"><i class="glyphicon glyphicon-wrench"></i> 修订题目</button>
+                <a href="/survey/preview/{%= model.objectId %}" target="_blank" class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> 预览</a>
             </div>
-
         </div>
     </div>
 </script>
 
 <script type="text/template" id="survey-form-tpl">
-    <form role="form">
-        <div class="form-group">
-            <label for="survey-title">标题<span class="k-invalid-msg" data-for="survey-title">*</span></label>
-            <input type="text" class="form-control" id="survey-title" name="survey-title" value="{%- title %}" required placeholder="(必填)请输入标题" validationMessage="必填">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#survey-form-base" aria-controls="survey-form-base" role="tab" data-toggle="tab">基础</a>
+        </li>
+        <li role="presentation">
+            <a href="#survey-form-advance" aria-controls="survey-form-advance" role="tab" data-toggle="tab">高级</a>
+        </li>
+    </ul>
+    <form role="form" class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="survey-form-base">
+            <div class="form-group">
+                <label for="survey-title">标题<span class="k-invalid-msg" data-for="survey-title">*</span></label>
+                <input type="text" class="form-control" id="survey-title" name="survey-title" value="{%- title %}" required placeholder="(必填)请输入标题" validationMessage="必填">
+            </div>
+            <div class="form-group">
+                <label for="survey-intro">卷首语<span class="k-invalid-msg" data-for="survey-intro">*</span></label>
+                <textarea class="form-control" id="survey-intro" name="survey-intro" rows="3" required placeholder="(必填)请输入卷首语" validationMessage="必填">{%- intro %}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="survey-closing">结束语<span class="k-invalid-msg" data-for="survey-closing">*</span></label>
+                <textarea class="form-control" id="survey-closing" name="survey-closing" rows="3" required placeholder="(必填)请输入结束语" validationMessage="必填">{%- closing %}</textarea>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="survey-intro">卷首语<span class="k-invalid-msg" data-for="survey-intro">*</span></label>
-            <textarea class="form-control" id="survey-intro" name="survey-intro" rows="3" required placeholder="(必填)请输入卷首语" validationMessage="必填">{%- intro %}</textarea>
-        </div>
-        <div class="form-group">
-            <label for="survey-closing">结束语<span class="k-invalid-msg" data-for="survey-closing">*</span></label>
-            <textarea class="form-control" id="survey-closing" name="survey-closing" rows="3" required placeholder="(必填)请输入结束语" validationMessage="必填">{%- closing %}</textarea>
-        </div>
-        <div class="form-group">
-            <label>背景颜色：</label>
-            <input type="text" id="survey-background-color" value="{%- background.color %}">
-            <label>&nbsp;&nbsp;&nbsp;&nbsp;文字颜色：</label>
-            <input type="text" id="survey-text-color" value="{%- color %}">
-        </div>
-        <div class="form-group">
-            <label for="survey-background-url">背景图片网址</label>
-            <input type="url" class="form-control" id="survey-background-url" value="{%- background.url %}" placeholder="(可选)请输入背景图片网址">
-        </div>
-        <div class="form-group">
-            <label for="survey-conf">用户信息请求配置（格式：名称:类型:描述，每行一项）</label>
-            <textarea class="form-control" id="survey-conf" rows="4" placeholder="(可选)用户信息请求配置，例如：fullname:textarea:姓名">{%- conf %}</textarea>
-        </div>
-        <div class="form-group">
-            <button type="button" id="btn-save-survey" class="btn btn-success">保存</button>
+        <div role="tabpanel" class="tab-pane" id="survey-form-advance">
+            <div class="form-group">
+                <label>背景颜色：</label>
+                <input type="text" id="survey-background-color" value="{%- background.color %}">
+                <label>&nbsp;&nbsp;&nbsp;&nbsp;文字颜色：</label>
+                <input type="text" id="survey-text-color" value="{%- color %}">
+            </div>
+            <div class="form-group">
+                <label for="survey-background-url">背景图片网址</label>
+                <input type="url" class="form-control" id="survey-background-url" value="{%- background.url %}" placeholder="(可选)请输入背景图片网址">
+            </div>
+            <div class="form-group">
+                <label for="survey-conf">用户信息请求配置（格式：名称:类型:描述，每行一项）</label>
+                <textarea class="form-control" id="survey-conf" rows="4" placeholder="(可选)用户信息请求配置，例如：fullname:textarea:姓名">{%- conf %}</textarea>
+            </div>
         </div>
     </form>
 </script>
 
-<script type="text/template" id="survey-item-form-tpl">
+<script type="text/template" id="survey-item-form-choice-tpl">
     <form role="form">
         <div class="form-group">
-            <label for="survey-item-title">标题<span class="k-invalid-msg" data-for="survey-item-title">*</span></label>
-            <input type="text" class="form-control" id="survey-item-title" name="survey-item-title" value="{%- title %}" required placeholder="(必填)请输入标题" validationMessage="必填">
+            <label for="survey-item-title">题纲<span class="k-invalid-msg" data-for="survey-item-title">*</span></label>
+            <textarea class="form-control" id="survey-item-title" name="survey-item-title" rows="2"
+                      placeholder="(必填)请输入题纲"
+                      required validationMessage="必填">{%- title %}</textarea>
         </div>
         <div class="form-group">
-            <label for="survey-item-items">选项<span class="k-invalid-msg" data-for="survey-item-items">*</span></label>
-            <textarea class="form-control" id="survey-item-items" name="survey-item-items" rows="4" required placeholder="(必填)请输入选项" validationMessage="必填">{%- items %}</textarea>
+            <label for="survey-item-items">选项（每行一个选项）<span class="k-invalid-msg" data-for="survey-item-items">*</span></label>
+            <textarea class="form-control" id="survey-item-items" name="survey-item-items" rows="6"
+                      placeholder="(必填)请输入选项，每行一个选项"
+                      required validationMessage="必填">{%- items %}</textarea>
         </div>
+        <div class="checkbox">
+            <label><input type="checkbox" id="survey-item-other" name="survey-item-other" {% if(other) { %}checked{% } %}> 是否包含“其他”选项</label>
+        </div>
+        <div class="checkbox">
+            <label><input type="checkbox" id="survey-item-required" name="survey-item-required" {% if(required) { %}checked{% } %}> 是否必填</label>
+        </div>
+    </form>
+</script>
+
+<script type="text/template" id="survey-item-form-qa-tpl">
+    <form role="form">
         <div class="form-group">
-            <label for="survey-item-intro">描述</label>
-            <textarea class="form-control" id="survey-item-intro" name="survey-item-intro" rows="3" placeholder="(可选)请输入描述">{%- intro %}</textarea>
+            <label for="survey-item-title">题纲<span class="k-invalid-msg" data-for="survey-item-title">*</span></label>
+            <textarea class="form-control" id="survey-item-title" name="survey-item-title" rows="3" required placeholder="(必填)请输入题纲" validationMessage="必填">{%- title %}</textarea>
+        </div>
+        <div class="checkbox">
+            <label><input type="checkbox" id="survey-item-required" name="survey-item-required" {% if(required) { %}checked{% } %}> 是否必填</label>
         </div>
     </form>
 </script>
 
 <script type="text/template" id="survey-item-tpl">
-    <h4 class="list-group-item-heading">{%- title %}</h4>
-    <div class="list-group-item-text">
-        <div>{%- intro %}</div>
-        <div>{%- items %}</div>
-    </div>
+    <span class="badge survey-item-remove" title="删除"><i class="glyphicon glyphicon-remove"></i></span>
+    <span class="badge survey-item-edit" title="编辑"><i class="glyphicon glyphicon-edit"></i></span>
+    <h4 class="list-group-item-heading">
+        <span class="label label-warning">
+        {% if(type=='sc') { %}单选{% } %}
+        {% if(type=='mc') { %}多选{% } %}
+        {% if(type=='qa') { %}简答{% } %}
+        </span>
+        {% if(required) { %}<span class="label label-danger">必</span>{% } %}
+        {%- title %}
+    </h4>
+    {% if(items.length>0){ %}
+    <ul class="list-group-item-text">
+        {% _.each(items.split('\n'), function(item){ %}
+        <li>{%- item %}</li>
+        {% }) %}
+        {% if(other) { %}<li>其他：___________</li>{% } %}
+    </ul>
+    {% } %}
 </script>
 
 <script type="text/template" id="survey-item-collection-tpl">
-    <ul class="list-group"></ul>
+    <ul class="list-group">
+        <div style="text-align: center"><img src="/loading.gif"></div>
+    </ul>
 </script>
 
 <script src="/js/survey.js"></script>
