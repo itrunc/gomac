@@ -1,6 +1,7 @@
 // 在 Cloud code 里初始化 Express 框架
 var url = require('url');
 var express = require('express');
+var _ = require('underscore');
 var app = express();
 
 // App 全局配置
@@ -83,6 +84,53 @@ app.get('/survey/preview/:id', function(req, res) {
     res.render('survey-preview', assign);
 });
 
+app.post('/survey', function(req, res) {
+
+    var Survey = AV.Object.extend('Survey');
+    var SurveySample = AV.Object.extend('SurveySample');
+
+    var survey = new Survey();
+    survey.id = req.body.surveyID;
+
+    var query = new AV.Query(SurveySample);
+    query.equalTo('survey', survey);
+    query.equalTo('instance', req.body.instanceID);
+    query.first({
+        success: function(object) {
+            if( !object ) {
+                var surveySample = new SurveySample();
+                surveySample.set('survey', survey);
+                surveySample.set('instance', req.body.instanceID);
+                surveySample.set('profile', req.body.profile);
+                surveySample.set('answer', req.body.answer);
+                surveySample.save(null, {
+                    success: function(obj) {
+                        res.send(obj); //TODO:
+                    },
+                    error: function(err) {
+                        console.log(err);//TODO:
+                    }
+                });
+            }
+            else {
+                object.set('profile', req.body.profile);
+                object.set('answer', req.body.answer);
+                object.save(null, {
+                    success: function(obj) {
+                        res.send(obj);//TODO:
+                    },
+                    error: function(err) {
+                        console.log(err);//TODO:
+                    }
+                });
+            }
+        },
+        error: function(error) {
+            console.log(error);//TODO:
+        }
+    });
+
+});
 
 // 最后，必须有这行代码来使 express 响应 HTTP 请求
 app.listen();

@@ -15,21 +15,47 @@
     }
     .list-group-item {
         background-color: transparent;
+        border:none;
+        border-top: 1px solid #eee;
+        line-height: 1.5em;
+    }
+    .list-group-item-text {
+        padding-left: 8px;
+    }
+    .txt-survey-other {
+        border: none;
+        border-bottom: 1px solid #44b549;
+        background-color: transparent;
     }
 </style>
 </head>
 <body>
-<div id="survey" class="container"></div>
+<div class="container">
+    <form role="form" class="col-sm-6 col-sm-offset-3" method="post" action="/survey">
+        <div id="survey-profile"><img src="/loading.gif"></div>
+        <div id="survey-item-list"><img src="/loading.gif"></div>
+        <div class="form-group">
+            <input type="hidden" id="surveyID" name="surveyID" value="<%=surveyID%>">
+            <input type="hidden" id="instanceID" name="instanceID" value="">
+            <button type="button" class="btn btn-success btn-submit-survey">提交</button>
+        </div>
+    </form>
+</div>
 <%include footer%>
 
 <script type="text/template" id="survey-welcome-tpl">
     <div class="page-header">
-        <h1>{%- survey.title %}</h1>
+        <h3>{%- survey.title %}</h3>
     </div>
-    <pre>{%= survey.intro %}</pre>
-    <div>
-        <a href="#next" class="btn btn-default">马上开始</a>
+    {%
+    if( survey.conf ) {
+    _.each(survey.conf, function(item, key) {
+    %}
+    <div class="form-group">
+        <label>{%- item.label %}</label>
+        <input type="{%- item.type %}" class="form-control" name="profile[{%- key %}]" placeholder="输入{%- item.label %}">
     </div>
+    {% }) } %}
 </script>
 
 <script type="text/template" id="survey-item-collection-tpl">
@@ -39,62 +65,54 @@
 </script>
 
 <script type="text/template" id="survey-item-sc-tpl">
-    <h4 class="list-group-item-heading">
+    <div class="list-group-item-heading">
         {%- model.title %}
-    </h4>
+    </div>
     <ul class="list-group-item-text">
-        {% _.each(model.items.split('\n'), function(item){ %}
+        {% _.each(model.items, function(item, key){ %}
         <li class="radio">
-            <label><input type="radio" name="answer[{%- model.objectId %}]"> {%- item %}</label>
+            <label><input type="radio" name="answer[{%- model.objectId %}]" value="{%- key %}"> {%- item %}</label>
         </li>
         {% }) %}
         {% if(model.other) { %}
         <li class="radio">
             <label>
                 <input type="radio" name="answer[{%- model.objectId %}]">
-                其他：
-                <input type="text">
+                <input type="text" class="txt-survey-other" value="" placeholder="其他">
             </label>
-
         </li>
         {% } %}
     </ul>
 </script>
 
 <script type="text/template" id="survey-item-mc-tpl">
-    <h4 class="list-group-item-heading">
+    <div class="list-group-item-heading">
         {%- model.title %}
-    </h4>
+    </div>
     <ul class="list-group-item-text">
-        {% _.each(model.items.split('\n'), function(item){ %}
+        {% _.each(model.items, function(item, key){ %}
         <li class="checkbox">
-            <label><input type="checkbox" name="answer[{%- model.objectId %}][]"> {%- item %}</label>
+            <label><input type="checkbox" name="answer[{%- model.objectId %}][]" value="{%- key %}"> {%- item %}</label>
         </li>
         {% }) %}
         {% if(model.other) { %}
         <li class="checkbox">
             <label>
                 <input type="checkbox" name="answer[{%- model.objectId %}][]">
-                其他：
-                <input type="text">
+                <input type="text" class="txt-survey-other" value="" placeholder="其他">
             </label>
-
         </li>
         {% } %}
     </ul>
 </script>
 
 <script type="text/template" id="survey-item-qa-tpl">
-    <h4 class="list-group-item-heading">
+    <div class="list-group-item-heading">
         {%- model.title %}
-    </h4>
-    <div class="list-group-item-text">
-        <textarea class="form-control" rows="3"></textarea>
     </div>
-</script>
-
-<script>
-    var surveyID = '<%=surveyID%>';
+    <div class="list-group-item-text">
+        <textarea class="form-control" rows="3" name="answer[{%- model.objectId %}]"></textarea>
+    </div>
 </script>
 <script src="/js/survey-preview.js"></script>
 </body>

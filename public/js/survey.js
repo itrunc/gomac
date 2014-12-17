@@ -112,7 +112,9 @@ $(function(){
 
             if( self.options.isCreate ) { //创建时
                 self.model.set('user', currentUser);
-                self.model.set('ACL', new AV.ACL(currentUser));
+                var acl = new AV.ACL(currentUser);
+                acl.setPublicReadAccess(true);
+                self.model.set('ACL', acl);
             }
 
             self.model.save(null, {
@@ -228,7 +230,9 @@ $(function(){
                 this.model.set('type', this.options.itemType);
                 this.model.set('survey', this.options.surveyView.model);
                 this.model.set('user', currentUser);
-                this.model.set('ACL', new AV.ACL(currentUser));
+                var acl = new AV.ACL(currentUser);
+                acl.setPublicReadAccess(true);
+                this.model.set('ACL', acl);
             }
 
             this.model.save(null, {
