@@ -55,7 +55,6 @@ $(function(){
         focusOther: function(e) {
             var self = this;
             $(e.target).closest('label').children().first().prop('checked', true);
-            return false;
         },
         changeOther: function(e) {
             var self =this;
