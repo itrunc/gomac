@@ -107,10 +107,17 @@ app.post('/survey', function(req, res) {
                 surveySample.set('answer', req.body.answer);
                 surveySample.save(null, {
                     success: function(obj) {
-                        res.send(obj); //TODO:
+                        res.render('message/success', {
+                            message: '完成调查，谢谢您的参与',
+                            url: '',
+                            delay: 3
+                        });
                     },
                     error: function(err) {
-                        console.log(err);//TODO:
+                        res.render('message/error', {
+                            title: '出错了',
+                            message: err.message
+                        });
                     }
                 });
             }
@@ -119,16 +126,26 @@ app.post('/survey', function(req, res) {
                 object.set('answer', req.body.answer);
                 object.save(null, {
                     success: function(obj) {
-                        res.send(obj);//TODO:
+                        res.render('message/success', {
+                            message: '完成调查，谢谢您的参与',
+                            url: '',
+                            delay: 3
+                        });
                     },
                     error: function(err) {
-                        console.log(err);//TODO:
+                        res.render('message/error', {
+                            title: '出错了',
+                            message: err.message
+                        });
                     }
                 });
             }
         },
-        error: function(error) {
-            console.log(error);//TODO:
+        error: function(err) {
+            res.render('message/error', {
+                title: '出错了',
+                message: err.message
+            });
         }
     });
 

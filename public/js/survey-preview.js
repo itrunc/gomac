@@ -78,7 +78,11 @@ $(function(){
             this.surveyItemCollection.bind('add', this.addOne);
             this.surveyItemCollection.bind('reset', this.addAll);
             this.surveyItemCollection.bind('all', this.render);
-            this.surveyItemCollection.fetch();
+            this.surveyItemCollection.fetch({
+                success: function(collection, response, options) {
+                    $('.btn-submit-survey').removeClass('disabled');
+                }
+            });
         },
         addOne: function(surveyItem) {
             var view = new SurveyItemView( {model: surveyItem} );
