@@ -445,6 +445,7 @@ $(function(){
             self.surveyCollection = new SurveyCollection;
             self.surveyCollection.query = new AV.Query( Survey );
             self.surveyCollection.query.equalTo('user', AV.User.current());
+            self.surveyCollection.query.descending('createdAt');
             self.surveyCollection.bind('add', this.addOne);
             self.surveyCollection.bind('reset', this.addAll);
             self.surveyCollection.bind('all', this.render);
@@ -506,6 +507,7 @@ $(function(){
                     self.surveyItemCollection.query = new AV.Query( SurveyItem );
                     self.surveyItemCollection.query.equalTo('user', AV.User.current());
                     self.surveyItemCollection.query.equalTo('survey', self.options.surveyView.model);
+                    self.surveyItemCollection.query.ascending('createdAt');
                     self.surveyItemCollection.bind('add', self.addOne);
                     self.surveyItemCollection.bind('reset', self.addAll);
                     self.surveyItemCollection.bind('all', self.render);

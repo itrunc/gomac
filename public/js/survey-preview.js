@@ -25,7 +25,7 @@ $(function(){
                     this.template = _.template( $('#survey-item-qa-tpl').html() );
                     break;
             }
-            this.model.set('required', this.model.get('required') ? 'required' : '');
+            //this.model.set('required', this.model.get('required') ? 'required' : '');
         },
         render: function() {
             $(this.el).html( this.template({
@@ -190,97 +190,50 @@ $(function(){
         error: function(msg) {
             var self = this;
             BootstrapDialog.alert({
-                title: '警告',
-                message: msg,
-                type: BootstrapDialog.TYPE_DANGER
+                title: '<i class="glyphicon glyphicon-warning-sign"></i> 警告',
+                message: '<div class="alert alert-danger">'+msg+'</div>',
+                type: BootstrapDialog.TYPE_DEFAULT
             });
         },
         submitSurvey: function(e) {
             var self = this;
             $(e.target).addClass('disabled');
-            //TODO: 表单前端验证
-            BootstrapDialog.show({
-                title: '谢谢您的参与',
-                message: this.survey.get('closing'),
-                type: BootstrapDialog.TYPE_SUCCESS,
-                buttons: [{
-                    label: '完成',
-                    cssClass: 'btn-success',
-                    action: function(dialog) { dialog.close(); }
-                }],
-                onhidden: function(dialog) {
-                    $('form').submit();
+            //表单验证
+            var validated = true;
+            $('.required').each(function(idx, elm) {
+                var element = $(elm);
+                if( element.has(':radio').length>0 && element.has(':radio:checked').length<=0
+                    || element.has(':checkbox').length>0 && element.has(':checkbox:checked').length<=0
+                    || element.has('textarea').length>0 && element.find('textarea').val().length<=0 ) {
+                    element.addClass('alert alert-danger');
+                    validated = false;
+                }
+                else {
+                    element.removeClass('alert alert-danger');
                 }
             });
+            if( validated ) {
+                BootstrapDialog.show({
+                    title: '谢谢您的参与',
+                    message: this.survey.get('closing'),
+                    type: BootstrapDialog.TYPE_SUCCESS,
+                    buttons: [{
+                        label: '完成',
+                        cssClass: 'btn-success',
+                        action: function(dialog) { dialog.close(); }
+                    }],
+                    onhidden: function(dialog) {
 
+                    }
+                });
+                $('form').submit();
+            }
+            else {
+                self.error('您遗漏了一些必答的问题，请回答拥有特殊背景色的问题，谢谢');
+                $(e.target).removeClass('disabled');
+                return false;
+            }
         }
     });
     new AppView;
-
-/*
-    var AppRouter = AV.Router.extend({
-        routes: {
-            '': 'welcome',
-            "welcome": "welcome",
-            "next": "next",
-            "closing": "closing"
-        },
-
-        survey: null,
-
-        initialize: function(options) {},
-
-        error: function(message) {
-            var self = this;
-            BootstrapDialog.alert({
-                title: '警告',
-                message: message,
-                type: BootstrapDialog.TYPE_DANGER
-            });
-        },
-
-        welcome: function() {
-            if( !surveyID ) {
-                this.error('非法访问');
-                return false;
-            }
-
-            if( !this.survey ) {
-                var Survey = AV.Object.extend('Survey');
-                var query = new AV.Query(Survey);
-                query.get(surveyID, {
-                    success: function(svy) {
-                        self.survey = svy;
-                        new SurveyView({model: self.survey});
-                    },
-                    error: function(object, error) {
-                        //TODO:
-                        console.log(object);
-                    }
-                });
-            }
-            else {
-                new SurveyView({model: this.survey});
-            }
-        },
-
-        next: function() {
-            if( !surveyID ) {
-                this.navigate('welcome', {trigger:true, replace:true});
-                return false;
-            }
-            new SurveyItemCollectionView;
-
-        },
-
-        closing: function() {
-            if( !this.survey ) {
-                this.navigate('welcome', {trigger:true, replace:true});
-            }
-        }
-    });
-
-    new AppRouter;
-    AV.history.start();
-*/
 });

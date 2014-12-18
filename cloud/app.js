@@ -76,12 +76,14 @@ app.get('/survey', function(req, res){
     res.render('survey', assign);
 });
 
-app.get('/survey/preview/:id', function(req, res) {
+app.get('/preview/:object/:id', function(req, res) {
+    var appname = req.params.object+'-preview';
+    var objID = req.params.id;
     var assign = {
-        appname: 'survey-preview',
-        surveyID: req.params.id
+        appname: appname,
+        objectId: objID
     };
-    res.render('survey-preview', assign);
+    res.render( appname, assign );
 });
 
 app.post('/survey', function(req, res) {
