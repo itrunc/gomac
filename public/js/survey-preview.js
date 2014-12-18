@@ -55,6 +55,7 @@ $(function(){
         focusOther: function(e) {
             var self = this;
             $(e.target).closest('label').children().first().prop('checked', true);
+            return false;
         },
         changeOther: function(e) {
             var self =this;
@@ -74,7 +75,8 @@ $(function(){
             this.surveyItemCollection = new SurveiItemCollection;
             this.surveyItemCollection.query = new AV.Query( SurveyItem );
             this.surveyItemCollection.query.equalTo('survey', this.model);
-            this.surveyItemCollection.query.ascending('createdAt');
+            this.surveyItemCollection.query.ascending('order');
+            this.surveyItemCollection.query.addAscending('createdAt');
             this.surveyItemCollection.bind('add', this.addOne);
             this.surveyItemCollection.bind('reset', this.addAll);
             this.surveyItemCollection.bind('all', this.render);
@@ -204,6 +206,16 @@ $(function(){
             $(e.target).addClass('disabled');
             //表单验证
             var validated = true;
+            $('input[required]').each(function(idx, elm) {
+                var element = $(elm);
+                if( element.val().length <= 0 ) {
+                    element.css('background-color', '#f2dede');
+                    validated = false;
+                }
+                else {
+                    element.css('background-color', '#fff');
+                }
+            });
             $('.required').each(function(idx, elm) {
                 var element = $(elm);
                 if( element.has(':radio').length>0 && element.has(':radio:checked').length<=0

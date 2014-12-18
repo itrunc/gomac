@@ -79,6 +79,7 @@
     </div>
 </script>
 
+<!--调查视图模板-->
 <script type="text/template" id="survey-tpl">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -98,8 +99,8 @@
                 <div class="btn-group dropup">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="glyphicon glyphicon-plus"></i> 创建题目 <span class="caret"></span></button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#" class="btn-add-survey-item" data-type="sc">单选题</a></li>
-                        <li><a href="#" class="btn-add-survey-item" data-type="mc">多选题</a></li>
+                        <li><a href="#" class="btn-add-survey-item" data-type="sc">选择题</a></li>
+                        <!--<li><a href="#" class="btn-add-survey-item" data-type="mc">多选题</a></li>-->
                         <li><a href="#" class="btn-add-survey-item" data-type="qa">简答题</a></li>
                     </ul>
                 </div>
@@ -110,6 +111,7 @@
     </div>
 </script>
 
+<!--调查表单模板-->
 <script type="text/template" id="survey-form-tpl">
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active">
@@ -153,6 +155,7 @@
     </form>
 </script>
 
+<!--选择题表单模板-->
 <script type="text/template" id="survey-item-form-choice-tpl">
     <form role="form">
         <div class="form-group">
@@ -167,15 +170,35 @@
                       placeholder="(必填)请输入选项，每行一个选项"
                       required validationMessage="必填">{%- items %}</textarea>
         </div>
-        <div class="checkbox">
-            <label><input type="checkbox" id="survey-item-other" name="survey-item-other" {% if(other) { %}checked{% } %}> 是否包含“其他”选项</label>
+        <div class="form-group">
+            <label form="survey-item-type">类型</label>
+            <select id="survey-item-type" name="survey-item-type" class="form-control" style="width: 160px">
+                <option value="sc" {%if(type=='sc'){ %}selected{% } %}>单选题</option>
+                <option value="mc" {%if(type=='mc'){ %}selected{% } %}>多选题</option>
+            </select>
         </div>
         <div class="checkbox">
-            <label><input type="checkbox" id="survey-item-required" name="survey-item-required" {% if(required) { %}checked{% } %}> 是否必填</label>
+            <label>
+                <input type="checkbox" id="survey-item-other" name="survey-item-other" {% if(other) { %}checked{% } %}>
+                是否包含“其他”选项
+            </label>
+        </div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="survey-item-required" name="survey-item-required" {% if(required) { %}checked{% } %}>
+                是否必填
+            </label>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon">顺序</span>
+                <input type="number" id="survey-item-order" name="survey-item-order" class="form-control" value="{%-order%}" min="0" style="width: 105px">
+            </div>
         </div>
     </form>
 </script>
 
+<!--简答题表单模板-->
 <script type="text/template" id="survey-item-form-qa-tpl">
     <form role="form">
         <div class="form-group">
@@ -185,9 +208,17 @@
         <div class="checkbox">
             <label><input type="checkbox" id="survey-item-required" name="survey-item-required" {% if(required) { %}checked{% } %}> 是否必填</label>
         </div>
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon">顺序</span>
+                <input type="number" id="survey-item-order" name="survey-item-order" class="form-control" value="{%-order%}" min="0" style="width: 105px">
+            </div>
+        </div>
+        <input type="hidden" id="survey-item-type" name="survey-item-type" value="qa">
     </form>
 </script>
 
+<!--题目显示模板-->
 <script type="text/template" id="survey-item-tpl">
     <span class="badge survey-item-remove" title="删除"><i class="glyphicon glyphicon-remove"></i></span>
     <span class="badge survey-item-edit" title="编辑"><i class="glyphicon glyphicon-edit"></i></span>

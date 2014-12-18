@@ -25,7 +25,8 @@ $(function(){
             items: '', //选项
             other: false, //是否包含“其他”选项
             required: true, //是否必填
-            type: 'sc' //sc-single choice, mc-multi choice, qa-question answer
+            type: 'sc', //sc-single choice, mc-multi choice, qa-question answer
+            order: 10 //排序
         },
         initialize: function() {
             _.bindAll(this, 'set', 'get');
@@ -160,12 +161,9 @@ $(function(){
 
             switch( this.options.itemType ) {
                 case 'sc':
-                    this.template = _.template( $('#survey-item-form-choice-tpl').html() );
-                    this.type = '单选题';
-                    break;
                 case 'mc':
                     this.template = _.template( $('#survey-item-form-choice-tpl').html() );
-                    this.type = '多选题';
+                    this.type = '选择题';
                     break;
                 default:
                     this.template = _.template( $('#survey-item-form-qa-tpl').html() );
@@ -182,9 +180,7 @@ $(function(){
                     label: '取消',
                     cssClass: 'btn-default',
                     icon: 'glyphicon glyphicon-ban-circle',
-                    action: function(dialog) {
-                        dialog.close();
-                    }
+                    action: function(dialog) { dialog.close(); }
                 }, {
                     label: '保存',
                     cssClass: 'btn-success',
@@ -203,7 +199,7 @@ $(function(){
             var thatDialog = dialog;
             var currentUser = AV.User.current();
 
-            if( !this.validator.validate() ) {
+            if( !this.validator.validate() ) { //验证表单，未通过
                 BootstrapDialog.alert({
                     title: '危险动作！',
                     message: '<div class="alert alert-danger">您未完全按照要求填写表单，请根据提示填写</div>',
@@ -212,26 +208,29 @@ $(function(){
                 return false;
             }
 
-            this.model.set('title', dialog.getModalBody().find('#survey-item-title').val());
-            this.model.set('required', dialog.getModalBody().find('#survey-item-required').prop('checked'));
+            var modalBody = dialog.getModalBody();
+
+            this.model.set('title', modalBody.find('#survey-item-title').val());
+            this.model.set('required', modalBody.find('#survey-item-required').prop('checked'));
+            this.model.set('order', parseInt(modalBody.find('#survey-item-order').val()));
+            this.model.set('type', modalBody.find('#survey-item-type').val());
 
             if( this.options.itemType != 'qa' ) {
-                var itemItems = dialog.getModalBody().find('#survey-item-items').val();
+                var itemItems = modalBody.find('#survey-item-items').val();
                 if( itemItems.split('\n').length < 2 ) {
                     BootstrapDialog.danger( '保存失败：请至少包含两个选项' );
-                    dialog.getModalBody().find('#survey-item-items').focus();
+                    modalBody.find('#survey-item-items').focus();
                     return false;
                 }
                 this.model.set('items', itemItems);
-                this.model.set('other', dialog.getModalBody().find('#survey-item-other').prop('checked'));
+                this.model.set('other', modalBody.find('#survey-item-other').prop('checked'));
             }
 
             if( this.options.isCreate ) {
-                this.model.set('type', this.options.itemType);
                 this.model.set('survey', this.options.surveyView.model);
                 this.model.set('user', currentUser);
-                var acl = new AV.ACL(currentUser);
-                acl.setPublicReadAccess(true);
+                var acl = new AV.ACL(currentUser); //当前用户包含读写权限
+                acl.setPublicReadAccess(true); //所有用户包含读权限
                 this.model.set('ACL', acl);
             }
 
@@ -245,9 +244,7 @@ $(function(){
                         buttons: [{
                             label: '关闭',
                             cssClass: 'btn-success',
-                            action: function( dialog ) {
-                                dialog.close();
-                            }
+                            action: function( dialog ) { dialog.close(); }
                         }],
                         onhidden: function(e) {
                             thatDialog.close();
@@ -507,7 +504,8 @@ $(function(){
                     self.surveyItemCollection.query = new AV.Query( SurveyItem );
                     self.surveyItemCollection.query.equalTo('user', AV.User.current());
                     self.surveyItemCollection.query.equalTo('survey', self.options.surveyView.model);
-                    self.surveyItemCollection.query.ascending('createdAt');
+                    self.surveyItemCollection.query.ascending('order');
+                    self.surveyItemCollection.query.addAscending('createdAt');
                     self.surveyItemCollection.bind('add', self.addOne);
                     self.surveyItemCollection.bind('reset', self.addAll);
                     self.surveyItemCollection.bind('all', self.render);
